@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DashboardView from '@/views/DashboardView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -12,15 +12,24 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'dashboard',
-      component: DashboardView,
-      meta: { title: 'Обзор' },
+      name: 'home',
+      component: HomeView,
+      meta: { title: 'Главная' },
+    },
+    {
+      path: '/workspace/:id',
+      name: 'workspace',
+      component: () => import('@/views/WorkspaceView.vue'),
     },
     {
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/SettingsView.vue'),
       meta: { title: 'Настройки' },
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'home' },
     },
   ],
 })

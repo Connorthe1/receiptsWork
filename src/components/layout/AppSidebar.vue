@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { ReceiptTextIcon } from '@lucide/vue'
-import { RouterLink, useRoute } from 'vue-router'
+import { HomeIcon, PlusIcon, ReceiptTextIcon, SettingsIcon } from '@lucide/vue'
+import { ref } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { toast } from 'vue-sonner'
+import WorkspaceFormDialog from '@/components/workspace/WorkspaceFormDialog.vue'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -13,9 +17,22 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar'
-import { navItems } from '@/lib/navigation'
+import { cn } from '@/lib/utils'
+import { workspaceColor, workspaceIcon } from '@/lib/workspaceAppearance'
+import { useWorkspaceStore } from '@/stores'
+import type { WorkspaceDraft } from '@/types'
 
 const route = useRoute()
+const router = useRouter()
+const workspaceStore = useWorkspaceStore()
+
+const createOpen = ref(false)
+
+async function handleCreate(draft: WorkspaceDraft) {
+  const workspace = await workspaceStore.create(draft)
+  toast.success('Раздел создан')
+  await router.push({ name: 'workspace', params: { id: workspace.id } })
+}
 </script>
 
 <template>
@@ -42,15 +59,51 @@ const route = useRoute()
 
     <SidebarContent>
       <SidebarGroup>
+        <SidebarGroupLabel>Main</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton as-child tooltip="Главная" :is-active="route.name === 'home'">
+                <RouterLink to="/">
+                  <HomeIcon />
+                  <span>Главная</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+
+      <SidebarGroup>
         <SidebarGroupLabel>Разделы</SidebarGroupLabel>
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="item in navItems" :key="item.to">
-              <SidebarMenuButton as-child :tooltip="item.title" :is-active="route.path === item.to">
-                <RouterLink :to="item.to">
-                  <component :is="item.icon" />
-                  <span>{{ item.title }}</span>
+            <SidebarMenuItem v-for="workspace in workspaceStore.workspaces" :key="workspace.id">
+              <SidebarMenuButton
+                as-child
+                :tooltip="workspace.name"
+                :is-active="route.params.id === workspace.id"
+              >
+                <RouterLink :to="{ name: 'workspace', params: { id: workspace.id } }">
+                  <component :is="workspaceIcon(workspace.icon)" />
+                  <span class="truncate">{{ workspace.name }}</span>
+                  <span
+                    :class="
+                      cn('ml-auto size-2 shrink-0 rounded-full', workspaceColor(workspace.color))
+                    "
+                  />
                 </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Новый раздел"
+                class="text-muted-foreground"
+                @click="createOpen = true"
+              >
+                <PlusIcon />
+                <span>Новый раздел</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
@@ -58,6 +111,21 @@ const route = useRoute()
       </SidebarGroup>
     </SidebarContent>
 
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton as-child tooltip="Настройки" :is-active="route.name === 'settings'">
+            <RouterLink to="/settings">
+              <SettingsIcon />
+              <span>Настройки</span>
+            </RouterLink>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+
     <SidebarRail />
   </Sidebar>
+
+  <WorkspaceFormDialog v-model:open="createOpen" @save="handleCreate" />
 </template>
