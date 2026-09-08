@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { MapPinIcon, PlusIcon } from '@lucide/vue'
+import { MapPinIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
+import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
-import { Button } from '@/components/ui/button'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useAddressStore } from '@/stores'
 import type { Address, AddressDraft, WorkspaceScope } from '@/types'
@@ -78,13 +78,20 @@ async function removeAddress(address: Address) {
 </script>
 
 <template>
-  <DashboardCard title="Адреса" :icon="MapPinIcon" :count="addresses.length" :class="props.class">
+  <DashboardCard
+    title="Адреса"
+    :icon="MapPinIcon"
+    :count="addresses.length"
+    stack-actions
+    :class="props.class"
+  >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск по адресам…" class="hidden w-36 2xl:block" />
-      <Button size="sm" variant="outline" @click="openCreate">
-        <PlusIcon class="size-4" />
-        Добавить
-      </Button>
+      <SearchInput
+        v-model="search"
+        placeholder="Поиск по адресам…"
+        class="max-w-40 min-w-0 flex-1"
+      />
+      <AddButton label="Добавить адрес" @click="openCreate" />
     </template>
 
     <EmptyState

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { MailIcon, PlusIcon } from '@lucide/vue'
+import { MailIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
+import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
 import StatusFilterSelect from '@/components/shared/StatusFilterSelect.vue'
-import { Button } from '@/components/ui/button'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useEmailStore, useWorkspaceStore } from '@/stores'
 import type { EmailAccount, EmailDraft, EmailStatus, StatusFilter } from '@/types'
@@ -100,18 +100,20 @@ async function removeEmail(email: EmailAccount) {
     title="Почты"
     :icon="MailIcon"
     :count="emailStore.emails.length"
+    stack-actions
     :class="props.class"
   >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск по почтам…" class="hidden w-44 lg:block" />
+      <SearchInput
+        v-model="search"
+        placeholder="Поиск по почтам…"
+        class="max-w-40 min-w-0 flex-1"
+      />
       <StatusFilterSelect v-model="statusFilter" />
-      <Button size="sm" variant="outline" @click="openCreate">
-        <PlusIcon class="size-4" />
-        Добавить
-      </Button>
+      <AddButton label="Добавить email" @click="openCreate" />
     </template>
 
-    <p v-if="workspaceId" class="text-muted-foreground border-b px-4 py-2 text-xs">
+    <p v-if="workspaceId" class="text-muted-foreground border-b px-5 py-2.5 text-xs">
       Список общий для всех разделов, статус ниже действует только здесь.
     </p>
 

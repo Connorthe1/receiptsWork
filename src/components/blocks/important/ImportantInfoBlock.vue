@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { KeyRoundIcon, PlusIcon } from '@lucide/vue'
+import { KeyRoundIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
+import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
-import { Button } from '@/components/ui/button'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useImportantInfoStore } from '@/stores'
 import type { ImportantItem, ImportantItemDraft, WorkspaceScope } from '@/types'
@@ -72,14 +72,12 @@ async function removeItem(item: ImportantItem) {
     title="Важная информация"
     :icon="KeyRoundIcon"
     :count="items.length"
+    stack-actions
     :class="props.class"
   >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск…" class="hidden w-32 2xl:block" />
-      <Button size="sm" variant="outline" @click="openCreate">
-        <PlusIcon class="size-4" />
-        Добавить
-      </Button>
+      <SearchInput v-model="search" placeholder="Поиск…" class="max-w-40 min-w-0 flex-1" />
+      <AddButton label="Добавить запись" @click="openCreate" />
     </template>
 
     <EmptyState

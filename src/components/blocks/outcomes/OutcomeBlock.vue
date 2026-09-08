@@ -61,12 +61,18 @@ async function removeOutcome(item: OutcomeItem) {
 </script>
 
 <template>
-  <DashboardCard title="Исход" :icon="ListChecksIcon" :count="outcomes.length" :class="props.class">
+  <DashboardCard
+    title="Исход"
+    :icon="ListChecksIcon"
+    :count="outcomes.length"
+    stack-actions
+    :class="props.class"
+  >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск…" class="hidden w-36 2xl:block" />
+      <SearchInput v-model="search" placeholder="Поиск…" class="max-w-40 min-w-0 flex-1" />
     </template>
 
-    <div class="flex items-center gap-2 border-b px-4 py-2">
+    <div class="flex items-center gap-2 border-b px-5 py-3">
       <Input
         v-model="newText"
         class="h-8 flex-1 font-mono"

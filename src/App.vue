@@ -21,7 +21,8 @@ onMounted(loadAll)
     <AppSidebar />
     <SidebarInset class="min-w-0">
       <AppHeader />
-      <div class="min-w-0 flex-1 p-4">
+      <!-- Centred column: full-width rows leave large dead gaps between value and actions. -->
+      <div class="mx-auto w-full max-w-6xl min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
         <RouterView />
       </div>
     </SidebarInset>

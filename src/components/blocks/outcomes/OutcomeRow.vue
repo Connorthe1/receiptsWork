@@ -36,7 +36,7 @@ function commit() {
 </script>
 
 <template>
-  <div class="hover:bg-muted/40 flex items-center gap-2 px-4 py-2 transition-colors">
+  <div class="hover:bg-muted/40 flex items-center gap-2 px-5 py-2.5 transition-colors">
     <template v-if="isEditing">
       <Input
         ref="inputRef"

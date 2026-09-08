@@ -6,10 +6,15 @@ import ImportantInfoBlock from '@/components/blocks/important/ImportantInfoBlock
 </script>
 
 <template>
-  <div class="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-5">
-    <EmailBlock class="xl:col-span-3" />
-    <ImportantInfoBlock class="xl:col-span-2" />
-    <AddressBlock class="xl:col-span-3" />
-    <PaymentCardsBlock class="xl:col-span-2" />
+  <div class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-5">
+    <div class="flex min-w-0 flex-col gap-5 xl:col-span-3">
+      <EmailBlock />
+      <AddressBlock />
+    </div>
+
+    <div class="flex min-w-0 flex-col gap-5 xl:col-span-2">
+      <ImportantInfoBlock />
+      <PaymentCardsBlock />
+    </div>
   </div>
 </template>

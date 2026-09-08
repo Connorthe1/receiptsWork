@@ -28,7 +28,7 @@ const bothValues = computed(() => `${props.email.email}\n${props.email.password}
   <div
     :class="
       cn(
-        'hover:bg-muted/40 flex items-center gap-3 px-4 py-2 transition-colors',
+        'hover:bg-muted/40 flex items-center gap-3 px-5 py-3 transition-colors',
         status === 'inactive' && 'bg-muted/20 opacity-55',
       )
     "
@@ -43,7 +43,7 @@ const bothValues = computed(() => `${props.email.email}\n${props.email.password}
       </p>
     </div>
 
-    <div class="hidden w-56 items-center gap-1 md:flex">
+    <div class="hidden w-44 items-center gap-1 @xl:flex">
       <SecretValue :value="email.password" class="flex-1" />
       <CopyButton :value="email.password" what="пароль" />
     </div>

@@ -14,7 +14,7 @@ const plainNumber = computed(() => digitsOnly(props.card.cardNumber) || props.ca
 </script>
 
 <template>
-  <div class="hover:bg-muted/40 flex flex-col gap-2 px-4 py-3 transition-colors">
+  <div class="hover:bg-muted/40 flex flex-col gap-2 px-5 py-3.5 transition-colors">
     <div class="flex items-center gap-2">
       <span class="truncate text-sm font-medium">{{ card.label }}</span>
       <span v-if="billingAddressLabel" class="text-muted-foreground truncate text-xs">

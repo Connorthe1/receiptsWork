@@ -12,6 +12,8 @@ const props = withDefaults(
     title: string
     icon?: Component
     count?: number
+    /** Set by blocks whose actions include a search box, which needs room of its own. */
+    stackActions?: boolean
     class?: string
   }>(),
   { count: 0 },
@@ -26,17 +28,26 @@ const open = ref(true)
     v-model:open="open"
     :class="
       cn(
-        'bg-card text-card-foreground ring-foreground/10 flex min-w-0 flex-col overflow-hidden rounded-xl shadow-xs ring-1',
+        // A container query: the header adapts to the block's own width, not the window's.
+        '@container bg-card text-card-foreground ring-foreground/10 flex min-w-0 flex-col overflow-hidden rounded-xl shadow-xs ring-1',
         props.class,
       )
     "
   >
-    <div class="flex items-center gap-2 border-b px-4 py-3">
+    <div class="flex flex-wrap items-center gap-2 border-b px-5 py-3.5">
       <component :is="icon" v-if="icon" class="text-muted-foreground size-4 shrink-0" />
-      <h2 class="truncate text-sm font-semibold tracking-tight">{{ title }}</h2>
+      <h2 class="shrink-0 text-sm font-semibold tracking-tight whitespace-nowrap">{{ title }}</h2>
       <Badge variant="secondary" class="shrink-0 tabular-nums">{{ count }}</Badge>
 
-      <div class="ml-auto flex shrink-0 items-center gap-1">
+      <!-- In a narrow block the actions drop to their own line instead of squeezing the search box. -->
+      <div
+        :class="
+          cn(
+            'ml-auto flex min-w-0 flex-1 items-center justify-end gap-1.5',
+            stackActions && 'basis-full @lg:basis-auto',
+          )
+        "
+      >
         <slot name="actions" />
         <Button
           type="button"

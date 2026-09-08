@@ -44,16 +44,22 @@ async function confirmRemoval() {
     <p v-else>Загрузка…</p>
   </div>
 
-  <div v-else class="flex min-w-0 flex-col gap-4">
+  <div v-else class="flex min-w-0 flex-col gap-6">
     <WorkspaceHeader :workspace="workspace" @edit="editOpen = true" @remove="removalOpen = true" />
 
-    <div class="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-5">
-      <EmailBlock :workspace-id="workspaceId" class="xl:col-span-3" />
-      <ImportantInfoBlock :workspace-id="workspaceId" class="xl:col-span-2" />
-      <OutcomeBlock :workspace-id="workspaceId" class="xl:col-span-3" />
-      <LinksBlock :workspace-id="workspaceId" class="xl:col-span-2" />
-      <AddressBlock :workspace-id="workspaceId" class="xl:col-span-3" />
-      <PaymentCardsBlock :workspace-id="workspaceId" class="xl:col-span-2" />
+    <!-- Two independent columns instead of a grid: blocks stack tightly and leave no ragged gaps. -->
+    <div class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-5">
+      <div class="flex min-w-0 flex-col gap-5 xl:col-span-3">
+        <EmailBlock :workspace-id="workspaceId" />
+        <OutcomeBlock :workspace-id="workspaceId" />
+        <AddressBlock :workspace-id="workspaceId" />
+      </div>
+
+      <div class="flex min-w-0 flex-col gap-5 xl:col-span-2">
+        <ImportantInfoBlock :workspace-id="workspaceId" />
+        <LinksBlock :workspace-id="workspaceId" />
+        <PaymentCardsBlock :workspace-id="workspaceId" />
+      </div>
     </div>
 
     <WorkspaceFormDialog v-model:open="editOpen" :workspace="workspace" @save="handleEdit" />

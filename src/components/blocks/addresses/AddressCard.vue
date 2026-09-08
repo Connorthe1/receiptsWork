@@ -39,7 +39,7 @@ const fields = computed(() =>
 </script>
 
 <template>
-  <div class="hover:bg-muted/40 flex items-start gap-3 px-4 py-3 transition-colors">
+  <div class="hover:bg-muted/40 flex items-start gap-3 px-5 py-3.5 transition-colors">
     <div class="min-w-0 flex-1">
       <div class="flex min-w-0 items-center gap-2">
         <span class="truncate text-sm font-medium">{{ address.label }}</span>

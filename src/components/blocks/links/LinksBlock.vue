@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { LinkIcon, PlusIcon } from '@lucide/vue'
+import { LinkIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
+import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
-import { Button } from '@/components/ui/button'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useLinkStore } from '@/stores'
 import type { LinkDraft, LinkItem, WorkspaceScope } from '@/types'
@@ -68,13 +68,20 @@ async function removeLink(link: LinkItem) {
 </script>
 
 <template>
-  <DashboardCard title="Ссылки" :icon="LinkIcon" :count="links.length" :class="props.class">
+  <DashboardCard
+    title="Ссылки"
+    :icon="LinkIcon"
+    :count="links.length"
+    stack-actions
+    :class="props.class"
+  >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск по ссылкам…" class="hidden w-36 2xl:block" />
-      <Button size="sm" variant="outline" @click="openCreate">
-        <PlusIcon class="size-4" />
-        Добавить
-      </Button>
+      <SearchInput
+        v-model="search"
+        placeholder="Поиск по ссылкам…"
+        class="max-w-40 min-w-0 flex-1"
+      />
+      <AddButton label="Добавить ссылку" @click="openCreate" />
     </template>
 
     <EmptyState

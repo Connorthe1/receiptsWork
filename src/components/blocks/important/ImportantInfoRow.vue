@@ -9,7 +9,7 @@ const emit = defineEmits<{ edit: []; remove: [] }>()
 </script>
 
 <template>
-  <div class="hover:bg-muted/40 px-4 py-2 transition-colors">
+  <div class="hover:bg-muted/40 px-5 py-3 transition-colors">
     <div class="flex items-center gap-3">
       <span class="text-muted-foreground w-36 shrink-0 truncate text-xs">{{ item.title }}</span>
 
