@@ -77,6 +77,12 @@ export interface LinkItem extends BaseEntity {
   notes: string
 }
 
+/** Free-form result jotted down while working: codes from email, order numbers, notes. */
+export interface OutcomeItem extends BaseEntity {
+  workspaceId: WorkspaceScope
+  text: string
+}
+
 export type StatusFilter = 'all' | 'active' | 'inactive'
 
 /**

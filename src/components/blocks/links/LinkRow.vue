@@ -40,6 +40,6 @@ const href = computed(() => normalizeUrl(props.link.url))
     </Button>
 
     <CopyButton :value="href" what="ссылку" />
-    <RowActions @edit="emit('edit')" @remove="emit('remove')" />
+    <RowActions :label="link.title" @edit="emit('edit')" @remove="emit('remove')" />
   </div>
 </template>

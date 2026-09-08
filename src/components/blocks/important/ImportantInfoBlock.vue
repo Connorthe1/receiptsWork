@@ -27,7 +27,7 @@ const {
   target: pendingRemoval,
   isOpen: removalOpen,
   request: requestRemoval,
-  dismiss,
+  confirm: confirmRemoval,
 } = useDeletionTarget<ImportantItem>()
 
 const items = computed(() => store.forScope(props.workspaceId))
@@ -61,11 +61,8 @@ async function handleSave(draft: ImportantItemDraft) {
   }
 }
 
-async function confirmRemoval() {
-  if (!pendingRemoval.value) return
-
-  await store.remove(pendingRemoval.value.id)
-  dismiss()
+async function removeItem(item: ImportantItem) {
+  await store.remove(item.id)
   toast.success('Запись удалена')
 }
 </script>
@@ -111,6 +108,6 @@ async function confirmRemoval() {
     v-model:open="removalOpen"
     title="Удалить запись?"
     :description="`«${pendingRemoval?.title ?? ''}» будет удалена.`"
-    @confirm="confirmRemoval"
+    @confirm="confirmRemoval(removeItem)"
   />
 </template>

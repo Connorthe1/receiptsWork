@@ -3,6 +3,7 @@ import { useCardStore } from './cards'
 import { useEmailStore } from './emails'
 import { useImportantInfoStore } from './importantInfo'
 import { useLinkStore } from './links'
+import { useOutcomeStore } from './outcomes'
 import { useWorkspaceStore } from './workspaces'
 
 export {
@@ -11,6 +12,7 @@ export {
   useEmailStore,
   useImportantInfoStore,
   useLinkStore,
+  useOutcomeStore,
   useWorkspaceStore,
 }
 
@@ -22,8 +24,9 @@ export function useDashboardData() {
   const addresses = useAddressStore()
   const cards = useCardStore()
   const links = useLinkStore()
+  const outcomes = useOutcomeStore()
 
-  const scoped = [importantInfo, addresses, cards, links]
+  const scoped = [importantInfo, addresses, cards, links, outcomes]
 
   async function loadAll(): Promise<void> {
     await Promise.all([workspaces.load(), emails.load(), ...scoped.map((store) => store.load())])
@@ -49,6 +52,7 @@ export function useDashboardData() {
     addresses,
     cards,
     links,
+    outcomes,
     loadAll,
     reloadAll,
     deleteWorkspace,

@@ -4,6 +4,7 @@ import type {
   EmailAccount,
   ImportantItem,
   LinkItem,
+  OutcomeItem,
   PaymentCard,
   Workspace,
   WorkspaceEmailStatus,
@@ -17,6 +18,7 @@ export class DashboardDatabase extends Dexie {
   addresses!: Table<Address, string>
   cards!: Table<PaymentCard, string>
   links!: Table<LinkItem, string>
+  outcomes!: Table<OutcomeItem, string>
 
   constructor() {
     super('receipts-work')
@@ -29,6 +31,10 @@ export class DashboardDatabase extends Dexie {
       addresses: 'id, workspaceId, createdAt',
       cards: 'id, workspaceId, createdAt',
       links: 'id, workspaceId, createdAt',
+    })
+
+    this.version(2).stores({
+      outcomes: 'id, workspaceId, createdAt',
     })
   }
 }
@@ -43,6 +49,7 @@ export const dbTables = [
   'addresses',
   'cards',
   'links',
+  'outcomes',
 ] as const
 
 export type DbTableName = (typeof dbTables)[number]

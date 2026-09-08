@@ -7,6 +7,7 @@ import PaymentCardsBlock from '@/components/blocks/cards/PaymentCardsBlock.vue'
 import EmailBlock from '@/components/blocks/emails/EmailBlock.vue'
 import ImportantInfoBlock from '@/components/blocks/important/ImportantInfoBlock.vue'
 import LinksBlock from '@/components/blocks/links/LinksBlock.vue'
+import OutcomeBlock from '@/components/blocks/outcomes/OutcomeBlock.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import WorkspaceFormDialog from '@/components/workspace/WorkspaceFormDialog.vue'
 import WorkspaceHeader from '@/components/workspace/WorkspaceHeader.vue'
@@ -49,9 +50,10 @@ async function confirmRemoval() {
     <div class="grid min-w-0 grid-cols-1 items-start gap-4 xl:grid-cols-5">
       <EmailBlock :workspace-id="workspaceId" class="xl:col-span-3" />
       <ImportantInfoBlock :workspace-id="workspaceId" class="xl:col-span-2" />
-      <LinksBlock :workspace-id="workspaceId" class="xl:col-span-3" />
-      <AddressBlock :workspace-id="workspaceId" class="xl:col-span-2" />
-      <PaymentCardsBlock :workspace-id="workspaceId" class="xl:col-span-5" />
+      <OutcomeBlock :workspace-id="workspaceId" class="xl:col-span-3" />
+      <LinksBlock :workspace-id="workspaceId" class="xl:col-span-2" />
+      <AddressBlock :workspace-id="workspaceId" class="xl:col-span-3" />
+      <PaymentCardsBlock :workspace-id="workspaceId" class="xl:col-span-2" />
     </div>
 
     <WorkspaceFormDialog v-model:open="editOpen" :workspace="workspace" @save="handleEdit" />

@@ -36,7 +36,7 @@ const {
   target: pendingRemoval,
   isOpen: removalOpen,
   request: requestRemoval,
-  dismiss: dismissRemoval,
+  confirm: confirmRemoval,
 } = useDeletionTarget<EmailAccount>()
 
 function statusOf(email: EmailAccount): EmailStatus {
@@ -89,12 +89,8 @@ async function handleStatusChange(email: EmailAccount, status: EmailStatus) {
   }
 }
 
-async function confirmRemoval() {
-  const email = pendingRemoval.value
-  if (!email) return
-
+async function removeEmail(email: EmailAccount) {
   await emailStore.remove(email.id)
-  dismissRemoval()
   toast.success('Аккаунт удалён')
 }
 </script>
@@ -147,6 +143,6 @@ async function confirmRemoval() {
     v-model:open="removalOpen"
     title="Удалить аккаунт?"
     :description="`${pendingRemoval?.email ?? ''} будет удалён из всех разделов.`"
-    @confirm="confirmRemoval"
+    @confirm="confirmRemoval(removeEmail)"
   />
 </template>

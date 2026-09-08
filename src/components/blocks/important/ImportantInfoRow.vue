@@ -19,7 +19,7 @@ const emit = defineEmits<{ edit: []; remove: [] }>()
       </div>
 
       <CopyButton :value="item.value" :what="item.title" />
-      <RowActions @edit="emit('edit')" @remove="emit('remove')" />
+      <RowActions :label="item.title" @edit="emit('edit')" @remove="emit('remove')" />
     </div>
 
     <p v-if="item.notes" class="text-muted-foreground mt-0.5 pl-[9.75rem] text-xs">

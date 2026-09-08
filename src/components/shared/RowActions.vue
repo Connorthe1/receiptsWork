@@ -9,6 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+/** `label` names the record the menu belongs to, so screen readers get more than "Действия". */
+defineProps<{ label?: string }>()
+
 const emit = defineEmits<{ edit: []; remove: [] }>()
 </script>
 
@@ -20,7 +23,7 @@ const emit = defineEmits<{ edit: []; remove: [] }>()
         variant="ghost"
         size="icon-sm"
         class="text-muted-foreground shrink-0"
-        aria-label="Действия"
+        :aria-label="label ? `Действия: ${label}` : 'Действия'"
       >
         <MoreHorizontalIcon class="size-4" />
       </Button>

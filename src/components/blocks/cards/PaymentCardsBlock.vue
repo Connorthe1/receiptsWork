@@ -26,7 +26,7 @@ const {
   target: pendingRemoval,
   isOpen: removalOpen,
   request: requestRemoval,
-  dismiss,
+  confirm: confirmRemoval,
 } = useDeletionTarget<PaymentCard>()
 
 const cards = computed(() => store.forScope(props.workspaceId))
@@ -63,11 +63,8 @@ async function handleSave(draft: CardDraft) {
   }
 }
 
-async function confirmRemoval() {
-  if (!pendingRemoval.value) return
-
-  await store.remove(pendingRemoval.value.id)
-  dismiss()
+async function removeCard(card: PaymentCard) {
+  await store.remove(card.id)
   toast.success('Карта удалена')
 }
 </script>
@@ -112,6 +109,6 @@ async function confirmRemoval() {
     v-model:open="removalOpen"
     title="Удалить карту?"
     :description="`«${pendingRemoval?.label ?? ''}» будет удалена.`"
-    @confirm="confirmRemoval"
+    @confirm="confirmRemoval(removeCard)"
   />
 </template>

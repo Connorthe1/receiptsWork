@@ -27,7 +27,7 @@ const {
   target: pendingRemoval,
   isOpen: removalOpen,
   request: requestRemoval,
-  dismiss,
+  confirm: confirmRemoval,
 } = useDeletionTarget<LinkItem>()
 
 const links = computed(() => store.forScope(props.workspaceId))
@@ -61,11 +61,8 @@ async function handleSave(draft: LinkDraft) {
   }
 }
 
-async function confirmRemoval() {
-  if (!pendingRemoval.value) return
-
-  await store.remove(pendingRemoval.value.id)
-  dismiss()
+async function removeLink(link: LinkItem) {
+  await store.remove(link.id)
   toast.success('Ссылка удалена')
 }
 </script>
@@ -106,6 +103,6 @@ async function confirmRemoval() {
     v-model:open="removalOpen"
     title="Удалить ссылку?"
     :description="`«${pendingRemoval?.title ?? ''}» будет удалена.`"
-    @confirm="confirmRemoval"
+    @confirm="confirmRemoval(removeLink)"
   />
 </template>

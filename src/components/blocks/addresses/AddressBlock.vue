@@ -29,7 +29,7 @@ const {
   target: pendingRemoval,
   isOpen: removalOpen,
   request: requestRemoval,
-  dismiss,
+  confirm: confirmRemoval,
 } = useDeletionTarget<Address>()
 
 const addresses = computed(() => store.forScope(props.workspaceId))
@@ -71,11 +71,8 @@ async function duplicate(address: Address) {
   toast.success('Адрес продублирован')
 }
 
-async function confirmRemoval() {
-  if (!pendingRemoval.value) return
-
-  await store.remove(pendingRemoval.value.id)
-  dismiss()
+async function removeAddress(address: Address) {
+  await store.remove(address.id)
   toast.success('Адрес удалён')
 }
 </script>
@@ -117,6 +114,6 @@ async function confirmRemoval() {
     v-model:open="removalOpen"
     title="Удалить адрес?"
     :description="`«${pendingRemoval?.label ?? ''}» будет удалён.`"
-    @confirm="confirmRemoval"
+    @confirm="confirmRemoval(removeAddress)"
   />
 </template>

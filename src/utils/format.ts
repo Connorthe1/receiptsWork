@@ -74,6 +74,15 @@ export function hostname(url: string): string {
   }
 }
 
+export function formatDateTime(timestamp: number): string {
+  return new Date(timestamp).toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 export function formatDate(timestamp: number): string {
   return new Date(timestamp).toLocaleDateString('ru-RU', {
     day: '2-digit',

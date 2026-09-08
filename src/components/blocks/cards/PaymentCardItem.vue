@@ -21,7 +21,7 @@ const plainNumber = computed(() => digitsOnly(props.card.cardNumber) || props.ca
         · {{ billingAddressLabel }}
       </span>
       <div class="ml-auto">
-        <RowActions @edit="emit('edit')" @remove="emit('remove')" />
+        <RowActions :label="card.label" @edit="emit('edit')" @remove="emit('remove')" />
       </div>
     </div>
 

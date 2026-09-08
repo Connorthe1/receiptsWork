@@ -53,7 +53,7 @@ const fields = computed(() =>
 
     <CopyButton :value="fullText" what="весь адрес" />
 
-    <RowActions @edit="emit('edit')" @remove="emit('remove')">
+    <RowActions :label="address.label" @edit="emit('edit')" @remove="emit('remove')">
       <template v-if="fields.length">
         <DropdownMenuLabel class="text-muted-foreground text-xs">Копировать поле</DropdownMenuLabel>
         <DropdownMenuItem

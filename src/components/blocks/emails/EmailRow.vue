@@ -52,6 +52,6 @@ const bothValues = computed(() => `${props.email.email}\n${props.email.password}
 
     <StatusToggle v-model="status" :label="`Статус ${email.email}`" />
 
-    <RowActions @edit="emit('edit')" @remove="emit('remove')" />
+    <RowActions :label="email.email" @edit="emit('edit')" @remove="emit('remove')" />
   </div>
 </template>

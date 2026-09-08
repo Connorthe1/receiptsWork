@@ -7,6 +7,7 @@ export const importantItemRepository = createRepository(db.importantItems)
 export const addressRepository = createRepository(db.addresses)
 export const cardRepository = createRepository(db.cards)
 export const linkRepository = createRepository(db.links)
+export const outcomeRepository = createRepository(db.outcomes)
 
 export * from './repository'
 export * from './workspaceEmailStatus'

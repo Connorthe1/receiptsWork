@@ -54,13 +54,13 @@ export function parseBackup(raw: string): BackupFile {
     throw new Error('Файл не похож на резервную копию Receipts Work')
   }
 
-  const missing = dbTables.filter((name) => !Array.isArray(candidate.data?.[name]))
+  // Backups written before a table existed simply restore it as empty.
+  const rows = candidate.data as Partial<Record<DbTableName, unknown[]>>
+  const data = Object.fromEntries(
+    dbTables.map((name) => [name, Array.isArray(rows[name]) ? rows[name] : []]),
+  ) as Record<DbTableName, unknown[]>
 
-  if (missing.length > 0) {
-    throw new Error(`В файле не хватает таблиц: ${missing.join(', ')}`)
-  }
-
-  return candidate as BackupFile
+  return { ...candidate, data } as BackupFile
 }
 
 /** Replaces the whole database with the backup contents. */
