@@ -23,6 +23,12 @@ export function useCollection<T extends BaseEntity>(repository: Repository<T>) {
     return created
   }
 
+  async function createMany(drafts: Draft<T>[]): Promise<T[]> {
+    const created = await repository.createMany(drafts)
+    items.value.push(...created)
+    return created
+  }
+
   async function update(id: string, patch: Partial<Draft<T>>): Promise<T> {
     const updated = await repository.update(id, patch)
     const index = items.value.findIndex((item) => item.id === id)
@@ -39,12 +45,17 @@ export function useCollection<T extends BaseEntity>(repository: Repository<T>) {
     items.value = items.value.filter((item) => item.id !== id)
   }
 
+  async function clear(): Promise<void> {
+    await repository.clear()
+    items.value = []
+  }
+
   function reset(): void {
     items.value = []
     isLoaded.value = false
   }
 
-  return { items, isLoaded, load, create, update, remove, reset }
+  return { items, isLoaded, load, create, createMany, update, remove, clear, reset }
 }
 
 export function byScope<T extends { workspaceId: WorkspaceScope }>(

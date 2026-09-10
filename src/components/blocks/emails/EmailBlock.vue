@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import { MailIcon } from '@lucide/vue'
+import { MailIcon, Trash2Icon, UploadIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
-import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
 import StatusFilterSelect from '@/components/shared/StatusFilterSelect.vue'
+import { Button } from '@/components/ui/button'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useEmailStore, useWorkspaceStore } from '@/stores'
 import type { EmailAccount, EmailDraft, EmailStatus, StatusFilter } from '@/types'
 import EmailFormDialog from './EmailFormDialog.vue'
+import EmailImportDialog from './EmailImportDialog.vue'
 import EmailRow from './EmailRow.vue'
 
 const props = withDefaults(
@@ -30,7 +31,11 @@ const search = ref('')
 const statusFilter = ref<StatusFilter>('all')
 
 const formOpen = ref(false)
+const importOpen = ref(false)
+const clearAllOpen = ref(false)
 const editing = ref<EmailAccount | null>(null)
+
+const existingEmails = computed(() => emailStore.emails.map((email) => email.email))
 
 const {
   target: pendingRemoval,
@@ -39,32 +44,41 @@ const {
   confirm: confirmRemoval,
 } = useDeletionTarget<EmailAccount>()
 
-function statusOf(email: EmailAccount): EmailStatus {
-  return props.workspaceId
-    ? workspaceStore.emailStatus(props.workspaceId, email)
-    : email.globalStatus
+/** The status is a per-section notion, so the Home page neither shows nor filters by it. */
+function statusOf(email: EmailAccount): EmailStatus | null {
+  return props.workspaceId ? workspaceStore.emailStatus(props.workspaceId, email) : null
+}
+
+/** On Home there is no per-section status, so fall back to the account's global flag. */
+function effectiveStatus(email: EmailAccount): EmailStatus {
+  return statusOf(email) ?? email.globalStatus
 }
 
 const visibleEmails = computed(() => {
   const query = search.value.trim().toLowerCase()
 
-  return emailStore.emails.filter((email) => {
-    const matchesQuery =
-      !query ||
-      email.email.toLowerCase().includes(query) ||
-      email.label.toLowerCase().includes(query) ||
-      email.notes.toLowerCase().includes(query)
+  return emailStore.emails
+    .filter((email) => {
+      const matchesQuery =
+        !query ||
+        email.email.toLowerCase().includes(query) ||
+        email.label.toLowerCase().includes(query) ||
+        email.notes.toLowerCase().includes(query)
 
-    const matchesStatus = statusFilter.value === 'all' || statusOf(email) === statusFilter.value
+      const matchesStatus =
+        statusFilter.value === 'all' || effectiveStatus(email) === statusFilter.value
 
-    return matchesQuery && matchesStatus
-  })
+      return matchesQuery && matchesStatus
+    })
+    .sort((a, b) => {
+      const aInactive = effectiveStatus(a) === 'inactive'
+      const bInactive = effectiveStatus(b) === 'inactive'
+
+      if (aInactive !== bInactive) return Number(aInactive) - Number(bInactive)
+
+      return a.index - b.index
+    })
 })
-
-function openCreate() {
-  editing.value = null
-  formOpen.value = true
-}
 
 function openEdit(email: EmailAccount) {
   editing.value = email
@@ -72,26 +86,35 @@ function openEdit(email: EmailAccount) {
 }
 
 async function handleSave(draft: EmailDraft) {
-  if (editing.value) {
-    await emailStore.update(editing.value.id, draft)
-    toast.success('Аккаунт обновлён')
-  } else {
-    await emailStore.create(draft)
-    toast.success('Аккаунт добавлен')
-  }
+  if (!editing.value) return
+
+  await emailStore.update(editing.value.id, draft)
+  toast.success('Аккаунт обновлён')
+}
+
+async function handleImport(drafts: EmailDraft[]) {
+  await emailStore.createMany(drafts)
+  toast.success(`Импортировано аккаунтов: ${drafts.length}`)
 }
 
 async function handleStatusChange(email: EmailAccount, status: EmailStatus) {
-  if (props.workspaceId) {
-    await workspaceStore.setEmailStatus(props.workspaceId, email.id, status)
-  } else {
-    await emailStore.update(email.id, { globalStatus: status })
-  }
+  if (!props.workspaceId) return
+
+  await workspaceStore.setEmailStatus(props.workspaceId, email.id, status)
 }
 
 async function removeEmail(email: EmailAccount) {
   await emailStore.remove(email.id)
   toast.success('Аккаунт удалён')
+}
+
+async function removeAllEmails() {
+  const count = emailStore.emails.length
+  if (count === 0) return
+
+  await emailStore.removeAll()
+  clearAllOpen.value = false
+  toast.success(`Удалено аккаунтов: ${count}`)
 }
 </script>
 
@@ -100,17 +123,32 @@ async function removeEmail(email: EmailAccount) {
     title="Почты"
     :icon="MailIcon"
     :count="emailStore.emails.length"
-    stack-actions
     :class="props.class"
   >
     <template #actions>
-      <SearchInput
-        v-model="search"
-        placeholder="Поиск по почтам…"
-        class="max-w-40 min-w-0 flex-1"
-      />
-      <StatusFilterSelect v-model="statusFilter" />
-      <AddButton label="Добавить email" @click="openCreate" />
+      <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
+      <StatusFilterSelect v-if="workspaceId" v-model="statusFilter" />
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-sm"
+        aria-label="Импорт почт списком"
+        title="Импорт списком"
+        @click="importOpen = true"
+      >
+        <UploadIcon class="size-4" />
+      </Button>
+      <Button
+        type="button"
+        variant="destructive"
+        size="icon-sm"
+        aria-label="Удалить все почты"
+        title="Удалить все"
+        :disabled="emailStore.emails.length === 0"
+        @click="clearAllOpen = true"
+      >
+        <Trash2Icon class="size-4" />
+      </Button>
     </template>
 
     <p v-if="workspaceId" class="text-muted-foreground border-b px-5 py-2.5 text-xs">
@@ -120,13 +158,14 @@ async function removeEmail(email: EmailAccount) {
     <EmptyState
       v-if="emailStore.emails.length === 0"
       title="Пока нет ни одного аккаунта"
-      description="Добавьте email, чтобы держать логины и пароли под рукой."
-      action-label="Добавить email"
-      @action="openCreate"
+      description="Импортируйте список email, чтобы держать логины и пароли под рукой."
+      action-label="Импорт списком"
+      @action="importOpen = true"
     />
     <EmptyState v-else-if="visibleEmails.length === 0" title="Ничего не найдено" />
 
-    <div v-else class="divide-y">
+    <!-- The list is capped in height so a long inbox scrolls instead of pushing the page down. -->
+    <div v-else class="max-h-[26rem] divide-y overflow-y-auto overscroll-contain">
       <EmailRow
         v-for="email in visibleEmails"
         :key="email.id"
@@ -141,10 +180,20 @@ async function removeEmail(email: EmailAccount) {
 
   <EmailFormDialog v-model:open="formOpen" :email="editing" @save="handleSave" />
 
+  <EmailImportDialog v-model:open="importOpen" :existing="existingEmails" @import="handleImport" />
+
   <ConfirmDialog
     v-model:open="removalOpen"
     title="Удалить аккаунт?"
     :description="`${pendingRemoval?.email ?? ''} будет удалён из всех разделов.`"
     @confirm="confirmRemoval(removeEmail)"
+  />
+
+  <ConfirmDialog
+    v-model:open="clearAllOpen"
+    title="Удалить все аккаунты?"
+    :description="`Будут удалены все ${emailStore.emails.length} аккаунтов из всех разделов. Действие нельзя отменить.`"
+    confirm-label="Удалить все"
+    @confirm="removeAllEmails"
   />
 </template>

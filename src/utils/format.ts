@@ -34,26 +34,16 @@ export function formatExpiry(card: Pick<PaymentCard, 'expiryMonth' | 'expiryYear
   return `${month}/${year}`
 }
 
-/** Plain-text address in the layout most checkout forms expect. */
+/** Plain-text address in the layout most forms expect. */
 export function formatAddress(address: Address): string {
   const name = [address.firstName, address.lastName].filter(Boolean).join(' ')
   const region = [address.city, address.state, address.postalCode].filter(Boolean).join(', ')
 
-  return [
-    name,
-    address.company,
-    address.address1,
-    address.address2,
-    region,
-    address.country,
-    address.phone,
-  ]
-    .filter(Boolean)
-    .join('\n')
+  return [name, address.address1, address.address2, region].filter(Boolean).join('\n')
 }
 
 export function addressSummary(address: Address): string {
-  return [address.address1, address.city, address.state, address.postalCode, address.country]
+  return [address.address1, address.city, address.state, address.postalCode]
     .filter(Boolean)
     .join(', ')
 }
@@ -78,6 +68,7 @@ export function formatDateTime(timestamp: number): string {
   return new Date(timestamp).toLocaleString('ru-RU', {
     day: '2-digit',
     month: '2-digit',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
   })

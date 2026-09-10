@@ -10,6 +10,8 @@ export interface BaseEntity {
 }
 
 export interface EmailAccount extends BaseEntity {
+  /** Stable ordinal assigned on create; never renumbered when the list is filtered or reordered. */
+  index: number
   email: string
   password: string
   label: string
@@ -32,8 +34,8 @@ export interface WorkspaceEmailStatus {
   status: EmailStatus
 }
 
+/** Shared across the Home page and every workspace, just like the email list. */
 export interface ImportantItem extends BaseEntity {
-  workspaceId: WorkspaceScope
   title: string
   value: string
   isSecret: boolean
@@ -45,16 +47,11 @@ export interface Address extends BaseEntity {
   label: string
   firstName: string
   lastName: string
-  company: string
   address1: string
   address2: string
   city: string
   state: string
   postalCode: string
-  country: string
-  phone: string
-  email: string
-  notes: string
 }
 
 export interface PaymentCard extends BaseEntity {
@@ -89,9 +86,9 @@ export type StatusFilter = 'all' | 'active' | 'inactive'
  * Shapes edited by the form dialogs. `workspaceId` is added by the surrounding block,
  * so the dialogs stay reusable between the Home page and workspaces.
  */
-export type EmailDraft = Omit<EmailAccount, keyof BaseEntity>
+export type EmailDraft = Omit<EmailAccount, keyof BaseEntity | 'index'>
 export type WorkspaceDraft = Omit<Workspace, keyof BaseEntity>
-export type ImportantItemDraft = Omit<ImportantItem, keyof BaseEntity | 'workspaceId'>
+export type ImportantItemDraft = Omit<ImportantItem, keyof BaseEntity>
 export type AddressDraft = Omit<Address, keyof BaseEntity | 'workspaceId'>
 export type CardDraft = Omit<PaymentCard, keyof BaseEntity | 'workspaceId'>
 export type LinkDraft = Omit<LinkItem, keyof BaseEntity | 'workspaceId'>

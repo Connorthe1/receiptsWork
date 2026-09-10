@@ -26,10 +26,12 @@ export function useDashboardData() {
   const links = useLinkStore()
   const outcomes = useOutcomeStore()
 
-  const scoped = [importantInfo, addresses, cards, links, outcomes]
+  /** Lists that belong to a single scope; the email and important-info lists are app-wide. */
+  const scoped = [addresses, cards, links, outcomes]
+  const global = [workspaces, emails, importantInfo]
 
   async function loadAll(): Promise<void> {
-    await Promise.all([workspaces.load(), emails.load(), ...scoped.map((store) => store.load())])
+    await Promise.all([...global, ...scoped].map((store) => store.load()))
   }
 
   /** Drops the workspace together with everything that only lived inside it. */
@@ -39,9 +41,10 @@ export function useDashboardData() {
   }
 
   async function reloadAll(): Promise<void> {
-    workspaces.reset()
-    emails.reset()
-    scoped.forEach((store) => store.reset())
+    for (const store of [...global, ...scoped]) {
+      store.reset()
+    }
+
     await loadAll()
   }
 

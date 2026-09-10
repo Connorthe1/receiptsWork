@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LinkIcon } from '@lucide/vue'
+import { CopyPlusIcon, LinkIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import AddButton from '@/components/shared/AddButton.vue'
@@ -7,9 +7,19 @@ import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
 import SearchInput from '@/components/shared/SearchInput.vue'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useLinkStore } from '@/stores'
 import type { LinkDraft, LinkItem, WorkspaceScope } from '@/types'
+import { stripEntityMeta } from '@/utils/entity'
+import { hostname } from '@/utils/format'
 import LinkFormDialog from './LinkFormDialog.vue'
 import LinkRow from './LinkRow.vue'
 
@@ -31,6 +41,9 @@ const {
 } = useDeletionTarget<LinkItem>()
 
 const links = computed(() => store.forScope(props.workspaceId))
+
+/** Inside a workspace the Home list doubles as a library to copy from. */
+const homeLinks = computed(() => (props.workspaceId ? store.forScope(null) : []))
 
 const visibleLinks = computed(() => {
   const query = search.value.trim().toLowerCase()
@@ -61,6 +74,11 @@ async function handleSave(draft: LinkDraft) {
   }
 }
 
+async function copyFromHome(link: LinkItem) {
+  await store.create({ ...stripEntityMeta(link), workspaceId: props.workspaceId })
+  toast.success(`«${link.title}» скопирована в раздел`)
+}
+
 async function removeLink(link: LinkItem) {
   await store.remove(link.id)
   toast.success('Ссылка удалена')
@@ -68,26 +86,54 @@ async function removeLink(link: LinkItem) {
 </script>
 
 <template>
-  <DashboardCard
-    title="Ссылки"
-    :icon="LinkIcon"
-    :count="links.length"
-    stack-actions
-    :class="props.class"
-  >
+  <DashboardCard title="Ссылки" :icon="LinkIcon" :count="links.length" :class="props.class">
     <template #actions>
-      <SearchInput
-        v-model="search"
-        placeholder="Поиск по ссылкам…"
-        class="max-w-40 min-w-0 flex-1"
-      />
+      <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
+
+      <DropdownMenu v-if="workspaceId">
+        <DropdownMenuTrigger as-child>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            aria-label="Взять ссылку с главной"
+            title="Взять ссылку с главной"
+          >
+            <CopyPlusIcon class="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-72">
+          <DropdownMenuLabel class="text-muted-foreground text-xs">
+            Ссылки с главной
+          </DropdownMenuLabel>
+          <DropdownMenuItem v-if="homeLinks.length === 0" disabled>
+            На главной пока нет ссылок
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            v-for="link in homeLinks"
+            :key="link.id"
+            @select="copyFromHome(link)"
+          >
+            <LinkIcon class="size-4" />
+            <span class="min-w-0 flex-1 truncate">{{ link.title }}</span>
+            <span class="text-muted-foreground truncate text-xs">
+              {{ hostname(link.url) }}
+            </span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <AddButton label="Добавить ссылку" @click="openCreate" />
     </template>
 
     <EmptyState
       v-if="links.length === 0"
       title="Пока нет ссылок"
-      description="Админки, таблицы и панели этого раздела в одном месте."
+      :description="
+        workspaceId
+          ? 'Админки, таблицы и панели этого раздела в одном месте.'
+          : 'Общие ссылки — их можно копировать в любой раздел.'
+      "
       action-label="Добавить ссылку"
       @action="openCreate"
     />

@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { CreditCardIcon } from '@lucide/vue'
+import { CopyPlusIcon, CreditCardIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import AddButton from '@/components/shared/AddButton.vue'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import DashboardCard from '@/components/shared/DashboardCard.vue'
 import EmptyState from '@/components/shared/EmptyState.vue'
+import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useAddressStore, useCardStore } from '@/stores'
 import type { CardDraft, PaymentCard, WorkspaceScope } from '@/types'
+import { stripEntityMeta } from '@/utils/entity'
+import { maskCardNumber } from '@/utils/format'
 import PaymentCardFormDialog from './PaymentCardFormDialog.vue'
 import PaymentCardItem from './PaymentCardItem.vue'
 
@@ -30,6 +40,9 @@ const {
 } = useDeletionTarget<PaymentCard>()
 
 const cards = computed(() => store.forScope(props.workspaceId))
+
+/** Inside a workspace the Home list doubles as a library to copy from. */
+const homeCards = computed(() => (props.workspaceId ? store.forScope(null) : []))
 
 /** Cards may reference a workspace address or a global one from the Home page. */
 const availableAddresses = computed(() => [
@@ -63,6 +76,11 @@ async function handleSave(draft: CardDraft) {
   }
 }
 
+async function copyFromHome(card: PaymentCard) {
+  await store.create({ ...stripEntityMeta(card), workspaceId: props.workspaceId })
+  toast.success(`«${card.label}» скопирована в раздел`)
+}
+
 async function removeCard(card: PaymentCard) {
   await store.remove(card.id)
   toast.success('Карта удалена')
@@ -72,6 +90,39 @@ async function removeCard(card: PaymentCard) {
 <template>
   <DashboardCard title="Карты" :icon="CreditCardIcon" :count="cards.length" :class="props.class">
     <template #actions>
+      <DropdownMenu v-if="workspaceId">
+        <DropdownMenuTrigger as-child>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            aria-label="Взять карту с главной"
+            title="Взять карту с главной"
+          >
+            <CopyPlusIcon class="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" class="w-72">
+          <DropdownMenuLabel class="text-muted-foreground text-xs">
+            Карты с главной
+          </DropdownMenuLabel>
+          <DropdownMenuItem v-if="homeCards.length === 0" disabled>
+            На главной пока нет карт
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            v-for="card in homeCards"
+            :key="card.id"
+            @select="copyFromHome(card)"
+          >
+            <CreditCardIcon class="size-4" />
+            <span class="min-w-0 flex-1 truncate">{{ card.label }}</span>
+            <span class="text-muted-foreground font-mono text-xs tabular-nums">
+              {{ maskCardNumber(card.cardNumber) }}
+            </span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
       <AddButton label="Добавить карту" @click="openCreate" />
     </template>
 

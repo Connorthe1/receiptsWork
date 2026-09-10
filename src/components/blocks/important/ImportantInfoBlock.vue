@@ -30,13 +30,11 @@ const {
   confirm: confirmRemoval,
 } = useDeletionTarget<ImportantItem>()
 
-const items = computed(() => store.forScope(props.workspaceId))
-
 const visibleItems = computed(() => {
   const query = search.value.trim().toLowerCase()
-  if (!query) return items.value
+  if (!query) return store.items
 
-  return items.value.filter(
+  return store.items.filter(
     (item) => item.title.toLowerCase().includes(query) || item.notes.toLowerCase().includes(query),
   )
 })
@@ -56,7 +54,7 @@ async function handleSave(draft: ImportantItemDraft) {
     await store.update(editing.value.id, draft)
     toast.success('Запись обновлена')
   } else {
-    await store.create({ ...draft, workspaceId: props.workspaceId })
+    await store.create(draft)
     toast.success('Запись добавлена')
   }
 }
@@ -71,17 +69,20 @@ async function removeItem(item: ImportantItem) {
   <DashboardCard
     title="Важная информация"
     :icon="KeyRoundIcon"
-    :count="items.length"
-    stack-actions
+    :count="store.items.length"
     :class="props.class"
   >
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск…" class="max-w-40 min-w-0 flex-1" />
+      <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
       <AddButton label="Добавить запись" @click="openCreate" />
     </template>
 
+    <p v-if="workspaceId" class="text-muted-foreground border-b px-5 py-2.5 text-xs">
+      Список общий для всех разделов: правки видны везде.
+    </p>
+
     <EmptyState
-      v-if="items.length === 0"
+      v-if="store.items.length === 0"
       title="Пока нет записей"
       description="Телефон, PIN, реферальный ID — всё, что нужно под рукой."
       action-label="Добавить запись"

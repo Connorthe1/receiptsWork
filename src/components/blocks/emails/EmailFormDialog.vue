@@ -72,9 +72,10 @@ function handleSubmit() {
         :model-value="form.globalStatus === 'active'"
         @update:model-value="form.globalStatus = $event ? 'active' : 'inactive'"
       />
-      <span class="text-sm"
-        >Глобальный статус: {{ form.globalStatus === 'active' ? 'Active' : 'Inactive' }}</span
-      >
+      <span class="text-sm">
+        Статус по умолчанию в разделах:
+        {{ form.globalStatus === 'active' ? 'Active' : 'Inactive' }}
+      </span>
     </label>
   </FormDialog>
 </template>

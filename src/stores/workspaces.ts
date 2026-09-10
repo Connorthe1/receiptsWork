@@ -49,6 +49,10 @@ export const useWorkspaceStore = defineStore('workspaces', () => {
     emailStatuses.value = emailStatuses.value.filter((entry) => entry.emailId !== emailId)
   }
 
+  function forgetAllEmails(): void {
+    emailStatuses.value = []
+  }
+
   async function remove(id: string): Promise<void> {
     await collection.remove(id)
     await workspaceEmailStatusService.removeByWorkspace(id)
@@ -68,6 +72,7 @@ export const useWorkspaceStore = defineStore('workspaces', () => {
     emailStatus,
     setEmailStatus,
     forgetEmail,
+    forgetAllEmails,
     create: collection.create,
     update: collection.update,
     remove,

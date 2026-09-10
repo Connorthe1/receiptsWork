@@ -41,4 +41,8 @@ export const workspaceEmailStatusService = {
   async removeByEmail(emailId: string): Promise<void> {
     await db.workspaceEmailStatuses.where('emailId').equals(emailId).delete()
   },
+
+  async clear(): Promise<void> {
+    await db.workspaceEmailStatuses.clear()
+  },
 }

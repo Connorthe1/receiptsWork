@@ -19,8 +19,9 @@ const displayed = computed(() =>
 </script>
 
 <template>
-  <span class="flex min-w-0 items-center gap-1">
-    <span :class="cn('truncate font-mono text-sm', props.class)">{{ displayed }}</span>
+  <span class="flex items-center gap-1">
+    <span :class="cn('min-w-0 truncate font-mono text-sm', props.class)">{{ displayed }}</span>
+    <slot />
     <Button
       type="button"
       variant="ghost"

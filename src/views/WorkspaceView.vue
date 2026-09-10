@@ -51,8 +51,8 @@ async function confirmRemoval() {
     <div class="grid min-w-0 grid-cols-1 gap-5 xl:grid-cols-5">
       <div class="flex min-w-0 flex-col gap-5 xl:col-span-3">
         <EmailBlock :workspace-id="workspaceId" />
-        <OutcomeBlock :workspace-id="workspaceId" />
         <AddressBlock :workspace-id="workspaceId" />
+        <OutcomeBlock :workspace-id="workspaceId" />
       </div>
 
       <div class="flex min-w-0 flex-col gap-5 xl:col-span-2">
@@ -67,7 +67,7 @@ async function confirmRemoval() {
     <ConfirmDialog
       v-model:open="removalOpen"
       title="Удалить раздел?"
-      :description="`«${workspace.name}» и все его записи, адреса, карты и ссылки будут удалены. Общий список почт не пострадает.`"
+      :description="`«${workspace.name}» вместе с его адресами, картами и ссылками будет удалён. Общие списки почт и важной информации не пострадают.`"
       @confirm="confirmRemoval"
     />
   </div>

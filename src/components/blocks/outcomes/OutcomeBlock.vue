@@ -61,15 +61,9 @@ async function removeOutcome(item: OutcomeItem) {
 </script>
 
 <template>
-  <DashboardCard
-    title="Исход"
-    :icon="ListChecksIcon"
-    :count="outcomes.length"
-    stack-actions
-    :class="props.class"
-  >
+  <DashboardCard title="Исход" :icon="ListChecksIcon" :count="outcomes.length" :class="props.class">
     <template #actions>
-      <SearchInput v-model="search" placeholder="Поиск…" class="max-w-40 min-w-0 flex-1" />
+      <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
     </template>
 
     <div class="flex items-center gap-2 border-b px-5 py-3">
@@ -92,7 +86,7 @@ async function removeOutcome(item: OutcomeItem) {
     />
     <EmptyState v-else-if="visibleOutcomes.length === 0" title="Ничего не найдено" />
 
-    <div v-else class="divide-y">
+    <div v-else class="max-h-[26rem] divide-y overflow-y-auto overscroll-contain">
       <OutcomeRow
         v-for="item in visibleOutcomes"
         :key="item.id"

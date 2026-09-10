@@ -4,7 +4,6 @@ import { toast } from 'vue-sonner'
 import FormDialog from '@/components/shared/FormDialog.vue'
 import FormField from '@/components/shared/FormField.vue'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import type { Address, AddressDraft } from '@/types'
 
 const open = defineModel<boolean>('open', { required: true })
@@ -16,16 +15,11 @@ const emptyDraft = (): AddressDraft => ({
   label: '',
   firstName: '',
   lastName: '',
-  company: '',
   address1: '',
   address2: '',
   city: '',
   state: '',
   postalCode: '',
-  country: '',
-  phone: '',
-  email: '',
-  notes: '',
 })
 
 const form = reactive<AddressDraft>(emptyDraft())
@@ -41,16 +35,11 @@ watch(open, (isOpen) => {
       label: source.label,
       firstName: source.firstName,
       lastName: source.lastName,
-      company: source.company,
       address1: source.address1,
       address2: source.address2,
       city: source.city,
       state: source.state,
       postalCode: source.postalCode,
-      country: source.country,
-      phone: source.phone,
-      email: source.email,
-      notes: source.notes,
     })
   }
 })
@@ -70,12 +59,12 @@ function handleSubmit() {
   <FormDialog
     v-model:open="open"
     :title="address ? 'Редактировать адрес' : 'Новый адрес'"
-    description="Платёжный или почтовый адрес для быстрой вставки в формы."
+    description="Почтовый адрес для быстрой вставки в формы."
     wide
     @submit="handleSubmit"
   >
     <FormField v-slot="{ id }" label="Название адреса">
-      <Input :id="id" v-model="form.label" placeholder="US Billing #1" />
+      <Input :id="id" v-model="form.label" placeholder="US Address #1" />
     </FormField>
 
     <div class="grid gap-4 sm:grid-cols-2">
@@ -86,10 +75,6 @@ function handleSubmit() {
         <Input :id="id" v-model="form.lastName" autocomplete="off" />
       </FormField>
     </div>
-
-    <FormField v-slot="{ id }" label="Company">
-      <Input :id="id" v-model="form.company" autocomplete="off" />
-    </FormField>
 
     <FormField v-slot="{ id }" label="Address Line 1">
       <Input :id="id" v-model="form.address1" autocomplete="off" />
@@ -110,22 +95,5 @@ function handleSubmit() {
         <Input :id="id" v-model="form.postalCode" autocomplete="off" />
       </FormField>
     </div>
-
-    <div class="grid gap-4 sm:grid-cols-2">
-      <FormField v-slot="{ id }" label="Country">
-        <Input :id="id" v-model="form.country" autocomplete="off" />
-      </FormField>
-      <FormField v-slot="{ id }" label="Phone">
-        <Input :id="id" v-model="form.phone" autocomplete="off" />
-      </FormField>
-    </div>
-
-    <FormField v-slot="{ id }" label="Email">
-      <Input :id="id" v-model="form.email" autocomplete="off" />
-    </FormField>
-
-    <FormField v-slot="{ id }" label="Notes">
-      <Textarea :id="id" v-model="form.notes" rows="2" />
-    </FormField>
   </FormDialog>
 </template>

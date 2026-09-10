@@ -24,7 +24,7 @@ const fullName = computed(() =>
 const summary = computed(() => addressSummary(props.address))
 const fullText = computed(() => formatAddress(props.address))
 
-/** Fields worth copying one by one when filling a checkout form. */
+/** Fields worth copying one by one when filling a form. */
 const fields = computed(() =>
   [
     { label: 'Имя и фамилия', value: fullName.value },
@@ -32,8 +32,6 @@ const fields = computed(() =>
     { label: 'City', value: props.address.city },
     { label: 'State', value: props.address.state },
     { label: 'ZIP', value: props.address.postalCode },
-    { label: 'Country', value: props.address.country },
-    { label: 'Phone', value: props.address.phone },
   ].filter((field) => field.value),
 )
 </script>
@@ -46,9 +44,6 @@ const fields = computed(() =>
         <span v-if="fullName" class="text-muted-foreground truncate text-xs">{{ fullName }}</span>
       </div>
       <p class="text-muted-foreground mt-0.5 truncate text-xs">{{ summary || '—' }}</p>
-      <p v-if="address.phone" class="text-muted-foreground mt-0.5 truncate font-mono text-xs">
-        {{ address.phone }}
-      </p>
     </div>
 
     <CopyButton :value="fullText" what="весь адрес" />

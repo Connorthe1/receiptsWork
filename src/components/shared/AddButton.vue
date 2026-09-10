@@ -2,13 +2,12 @@
 import { PlusIcon } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 
-/** `label` stays as the accessible name once the card is too narrow to show the caption. */
+/** Icon-only, so every card header stays the same width; `label` names the action. */
 defineProps<{ label: string }>()
 </script>
 
 <template>
-  <Button type="button" size="sm" variant="outline" :aria-label="label">
+  <Button type="button" size="icon-sm" variant="outline" :aria-label="label" :title="label">
     <PlusIcon class="size-4" />
-    <span class="hidden @lg:inline">Добавить</span>
   </Button>
 </template>

@@ -5,6 +5,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/*
+ * Reka UI reports its state through `data-state` and `data-orientation`, while the components
+ * are written against the shorter `data-open:` / `data-checked:` spelling. Each variant below
+ * accepts both, so state-driven styles (switches, animations, active tabs) actually apply.
+ */
+@custom-variant data-open (&:is([data-open], [data-state='open']));
+@custom-variant data-closed (&:is([data-closed], [data-state='closed']));
+@custom-variant data-checked (&:is([data-checked], [data-state='checked']));
+@custom-variant data-unchecked (&:is([data-unchecked], [data-state='unchecked']));
+@custom-variant data-active (&:is([data-active], [data-state='active']));
+@custom-variant data-inactive (&:is([data-inactive], [data-state='inactive']));
+@custom-variant data-horizontal (&:is([data-horizontal], [data-orientation='horizontal']));
+@custom-variant data-vertical (&:is([data-vertical], [data-orientation='vertical']));
+
 @theme inline {
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -45,6 +59,10 @@
 }
 
 :root {
+  color-scheme: light;
+  --scrollbar-size: 6px;
+  --scrollbar-thumb: oklch(0 0 0 / 18%);
+  --scrollbar-thumb-hover: oklch(0 0 0 / 32%);
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -80,6 +98,9 @@
 }
 
 .dark {
+  color-scheme: dark;
+  --scrollbar-thumb: oklch(1 0 0 / 14%);
+  --scrollbar-thumb-hover: oklch(1 0 0 / 28%);
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -119,5 +140,37 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Firefox has no ::-webkit-scrollbar, so it gets the closest standard equivalent. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) transparent;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  /* The classic Windows stepper arrows have no place in this layout. */
+  ::-webkit-scrollbar-button {
+    display: none;
   }
 }

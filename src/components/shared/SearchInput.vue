@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 const search = defineModel<string>({ required: true })
 
 const props = withDefaults(defineProps<{ placeholder?: string; class?: string }>(), {
-  placeholder: 'Поиск…',
+  placeholder: 'Поиск',
 })
 </script>
 

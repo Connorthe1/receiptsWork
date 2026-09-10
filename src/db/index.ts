@@ -36,6 +36,22 @@ export class DashboardDatabase extends Dexie {
     this.version(2).stores({
       outcomes: 'id, workspaceId, createdAt',
     })
+
+    this.version(3)
+      .stores({
+        emails: 'id, email, globalStatus, createdAt, index',
+      })
+      .upgrade(async (tx) => {
+        const table = tx.table('emails')
+        const rows = await table.toArray()
+
+        rows.sort(
+          (a, b) =>
+            Number(a.createdAt) - Number(b.createdAt) || String(a.id).localeCompare(String(b.id)),
+        )
+
+        await Promise.all(rows.map((row, i) => table.update(row.id, { index: i + 1 })))
+      })
   }
 }
 
