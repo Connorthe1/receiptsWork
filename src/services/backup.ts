@@ -65,10 +65,13 @@ export function parseBackup(raw: string): BackupFile {
 
 /** Replaces the whole database with the backup contents. */
 export async function importData(backup: BackupFile): Promise<void> {
+  // Strip Vue proxies / non-cloneables — IndexedDB structured clone rejects them.
+  const data = JSON.parse(JSON.stringify(backup.data)) as Record<DbTableName, unknown[]>
+
   await db.transaction('rw', allTables(), async () => {
     for (const name of dbTables) {
       await tableOf(name).clear()
-      await tableOf(name).bulkAdd(backup.data[name])
+      await tableOf(name).bulkAdd(data[name])
     }
   })
 }

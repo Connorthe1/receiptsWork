@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DownloadIcon, MoonIcon, SunIcon, Trash2Icon, UploadIcon } from '@lucide/vue'
-import { ref } from 'vue'
+import { markRaw, ref, shallowRef } from 'vue'
 import { toast } from 'vue-sonner'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,7 @@ const { isDark } = useTheme()
 const { reloadAll } = useDashboardData()
 
 const fileInput = ref<HTMLInputElement | null>(null)
-const pendingBackup = ref<BackupFile | null>(null)
+const pendingBackup = shallowRef<BackupFile | null>(null)
 const importOpen = ref(false)
 const clearFirstOpen = ref(false)
 const clearSecondOpen = ref(false)
@@ -33,7 +33,8 @@ async function handleFileChosen(event: Event) {
   if (!file) return
 
   try {
-    pendingBackup.value = parseBackup(await file.text())
+    // markRaw: keep backup plain so IndexedDB can structured-clone it
+    pendingBackup.value = markRaw(parseBackup(await file.text()))
     importOpen.value = true
   } catch (error) {
     toast.error(error instanceof Error ? error.message : 'Не удалось прочитать файл')
@@ -43,11 +44,15 @@ async function handleFileChosen(event: Event) {
 async function confirmImport() {
   if (!pendingBackup.value) return
 
-  await importData(pendingBackup.value)
-  pendingBackup.value = null
-  importOpen.value = false
-  await reloadAll()
-  toast.success('Данные восстановлены')
+  try {
+    await importData(pendingBackup.value)
+    pendingBackup.value = null
+    importOpen.value = false
+    await reloadAll()
+    toast.success('Данные восстановлены')
+  } catch (error) {
+    toast.error(error instanceof Error ? error.message : 'Не удалось импортировать данные')
+  }
 }
 
 async function confirmClear() {
