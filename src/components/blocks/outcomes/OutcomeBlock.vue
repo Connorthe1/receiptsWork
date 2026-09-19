@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<{ workspaceId?: WorkspaceScope; class?: s
 const store = useOutcomeStore()
 
 const newText = ref('')
+const newTag = ref('')
 const search = ref('')
 
 const {
@@ -29,29 +30,54 @@ const {
   confirm: confirmRemoval,
 } = useDeletionTarget<OutcomeItem>()
 
-/** Newest on top: the last code you received is the one you need right now. */
-const outcomes = computed(() => [...store.forScope(props.workspaceId)].reverse())
+/**
+ * Newest on top: the last code you received is the one you need right now.
+ * Switched-off records keep that order among themselves but sink below the active ones.
+ */
+const outcomes = computed(() => {
+  const newestFirst = [...store.forScope(props.workspaceId)].reverse()
+
+  return [
+    ...newestFirst.filter((item) => !item.isDisabled),
+    ...newestFirst.filter((item) => item.isDisabled),
+  ]
+})
 
 const visibleOutcomes = computed(() => {
   const query = search.value.trim().toLowerCase()
   if (!query) return outcomes.value
 
-  return outcomes.value.filter((item) => item.text.toLowerCase().includes(query))
+  return outcomes.value.filter(
+    (item) =>
+      item.text.toLowerCase().includes(query) || (item.tag ?? '').toLowerCase().includes(query),
+  )
 })
 
 async function add() {
   const text = newText.value.trim()
   if (!text) return
 
-  await store.create({ text, workspaceId: props.workspaceId })
+  await store.create({
+    text,
+    tag: newTag.value.trim(),
+    isDisabled: false,
+    workspaceId: props.workspaceId,
+  })
   newText.value = ''
+  newTag.value = ''
 }
 
-async function updateText(item: OutcomeItem, text: string) {
-  if (text === item.text) return
+async function saveOutcome(item: OutcomeItem, patch: { text: string; tag: string }) {
+  if (patch.text === item.text && patch.tag === (item.tag ?? '')) return
 
-  await store.update(item.id, { text })
+  await store.update(item.id, patch)
   toast.success('Запись обновлена')
+}
+
+async function setDisabled(item: OutcomeItem, isDisabled: boolean) {
+  if (isDisabled === (item.isDisabled ?? false)) return
+
+  await store.update(item.id, { isDisabled })
 }
 
 async function removeOutcome(item: OutcomeItem) {
@@ -69,8 +95,15 @@ async function removeOutcome(item: OutcomeItem) {
     <div class="flex items-center gap-2 border-b px-5 py-3">
       <Input
         v-model="newText"
-        class="h-8 flex-1 font-mono"
+        class="h-8 min-w-0 flex-1 font-mono"
         placeholder="Код, номер заказа, любой результат…"
+        @keydown.enter.prevent="add"
+      />
+      <Input
+        v-model="newTag"
+        class="h-8 w-24 shrink-0"
+        placeholder="Тег"
+        aria-label="Тег"
         @keydown.enter.prevent="add"
       />
       <Button size="sm" variant="outline" :disabled="!newText.trim()" @click="add">
@@ -91,7 +124,8 @@ async function removeOutcome(item: OutcomeItem) {
         v-for="item in visibleOutcomes"
         :key="item.id"
         :item="item"
-        @save="updateText(item, $event)"
+        @save="saveOutcome(item, $event)"
+        @toggle="setDisabled(item, $event)"
         @remove="requestRemoval(item)"
       />
     </div>

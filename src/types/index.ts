@@ -78,6 +78,10 @@ export interface LinkItem extends BaseEntity {
 export interface OutcomeItem extends BaseEntity {
   workspaceId: WorkspaceScope
   text: string
+  /** Free-form label used to group records. Optional: rows written before tags existed have none. */
+  tag?: string
+  /** Switched-off records stay in the list but sink below the active ones. Absent means active. */
+  isDisabled?: boolean
 }
 
 export type StatusFilter = 'all' | 'active' | 'inactive'

@@ -52,6 +52,22 @@ export class DashboardDatabase extends Dexie {
 
         await Promise.all(rows.map((row, i) => table.update(row.id, { index: i + 1 })))
       })
+
+    // Tags and the on/off switch. The schema is unchanged — both fields are filtered in
+    // memory — so this version only backfills the defaults onto rows written earlier.
+    this.version(4)
+      .stores({
+        outcomes: 'id, workspaceId, createdAt',
+      })
+      .upgrade(async (tx) => {
+        await tx
+          .table('outcomes')
+          .toCollection()
+          .modify((row: Partial<OutcomeItem>) => {
+            row.tag ??= ''
+            row.isDisabled ??= false
+          })
+      })
   }
 }
 

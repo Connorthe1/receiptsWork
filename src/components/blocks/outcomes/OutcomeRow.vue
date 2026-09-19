@@ -3,20 +3,29 @@ import { CheckIcon, XIcon } from '@lucide/vue'
 import { nextTick, ref, type ComponentPublicInstance } from 'vue'
 import CopyButton from '@/components/shared/CopyButton.vue'
 import RowActions from '@/components/shared/RowActions.vue'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 import type { OutcomeItem } from '@/types'
 import { formatDateTime } from '@/utils/format'
 
 const props = defineProps<{ item: OutcomeItem }>()
-const emit = defineEmits<{ save: [text: string]; remove: [] }>()
+const emit = defineEmits<{
+  save: [patch: { text: string; tag: string }]
+  toggle: [isDisabled: boolean]
+  remove: []
+}>()
 
 const isEditing = ref(false)
 const draft = ref('')
+const tagDraft = ref('')
 const inputRef = ref<ComponentPublicInstance | null>(null)
 
 async function startEditing() {
   draft.value = props.item.text
+  tagDraft.value = props.item.tag ?? ''
   isEditing.value = true
 
   await nextTick()
@@ -28,7 +37,7 @@ function commit() {
   const text = draft.value.trim()
 
   if (text) {
-    emit('save', text)
+    emit('save', { text, tag: tagDraft.value.trim() })
   }
 
   isEditing.value = false
@@ -42,6 +51,14 @@ function commit() {
         ref="inputRef"
         v-model="draft"
         class="h-8 flex-1 font-mono"
+        @keydown.enter.prevent="commit"
+        @keydown.esc.prevent="isEditing = false"
+      />
+      <Input
+        v-model="tagDraft"
+        class="h-8 w-24 shrink-0"
+        placeholder="Тег"
+        aria-label="Тег"
         @keydown.enter.prevent="commit"
         @keydown.esc.prevent="isEditing = false"
       />
@@ -60,9 +77,25 @@ function commit() {
     </template>
 
     <template v-else>
-      <span class="min-w-0 flex-1 font-mono text-sm break-all whitespace-pre-wrap">
+      <!-- Unchecked means switched off: the record stays, but sinks to the bottom of the list. -->
+      <Checkbox
+        :model-value="!item.isDisabled"
+        :aria-label="item.isDisabled ? `Включить: ${item.text}` : `Выключить: ${item.text}`"
+        @update:model-value="emit('toggle', $event !== true)"
+      />
+      <span
+        :class="
+          cn(
+            'min-w-0 flex-1 font-mono text-sm break-all whitespace-pre-wrap',
+            item.isDisabled && 'text-muted-foreground line-through',
+          )
+        "
+      >
         {{ item.text }}
       </span>
+      <Badge v-if="item.tag" variant="outline" class="max-w-28 shrink-0">
+        <span class="truncate">{{ item.tag }}</span>
+      </Badge>
       <span class="text-muted-foreground shrink-0 text-xs tabular-nums">
         {{ formatDateTime(item.createdAt) }}
       </span>
