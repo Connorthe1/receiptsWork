@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ListChecksIcon, PlusIcon } from '@lucide/vue'
+import { ListChecksIcon, PlusIcon, UploadIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useOutcomeStore } from '@/stores'
 import type { OutcomeItem, WorkspaceScope } from '@/types'
+import OutcomeImportDialog from './OutcomeImportDialog.vue'
 import OutcomeRow from './OutcomeRow.vue'
 
 const props = withDefaults(defineProps<{ workspaceId?: WorkspaceScope; class?: string }>(), {
@@ -22,6 +23,7 @@ const store = useOutcomeStore()
 const newText = ref('')
 const newTag = ref('')
 const search = ref('')
+const importOpen = ref(false)
 
 const {
   target: pendingRemoval,
@@ -67,6 +69,22 @@ async function add() {
   newTag.value = ''
 }
 
+/**
+ * A pasted list goes in untagged. It is created in reverse so the first line ends up newest,
+ * and the list then reads top to bottom in the order it was pasted.
+ */
+async function addMany(texts: string[]) {
+  await store.createMany(
+    [...texts].reverse().map((text) => ({
+      text,
+      tag: '',
+      isDisabled: false,
+      workspaceId: props.workspaceId,
+    })),
+  )
+  toast.success(`Добавлено записей: ${texts.length}`)
+}
+
 async function saveOutcome(item: OutcomeItem, patch: { text: string; tag: string }) {
   if (patch.text === item.text && patch.tag === (item.tag ?? '')) return
 
@@ -90,6 +108,16 @@ async function removeOutcome(item: OutcomeItem) {
   <DashboardCard title="Исход" :icon="ListChecksIcon" :count="outcomes.length" :class="props.class">
     <template #actions>
       <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-sm"
+        aria-label="Добавить коды списком"
+        title="Добавить списком"
+        @click="importOpen = true"
+      >
+        <UploadIcon class="size-4" />
+      </Button>
     </template>
 
     <div class="flex items-center gap-2 border-b px-5 py-3">
@@ -116,6 +144,8 @@ async function removeOutcome(item: OutcomeItem) {
       v-if="outcomes.length === 0"
       title="Пока пусто"
       description="Записывайте сюда коды из писем и другие результаты работы — поле выше добавляет запись по Enter."
+      action-label="Добавить списком"
+      @action="importOpen = true"
     />
     <EmptyState v-else-if="visibleOutcomes.length === 0" title="Ничего не найдено" />
 
@@ -130,6 +160,12 @@ async function removeOutcome(item: OutcomeItem) {
       />
     </div>
   </DashboardCard>
+
+  <OutcomeImportDialog
+    v-model:open="importOpen"
+    :existing="outcomes.map((item) => item.text)"
+    @import="addMany"
+  />
 
   <ConfirmDialog
     v-model:open="removalOpen"
