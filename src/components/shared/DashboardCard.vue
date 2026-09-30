@@ -7,15 +7,13 @@ import { Button } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible'
 import { cn } from '@/lib/utils'
 
-const props = withDefaults(
-  defineProps<{
-    title: string
-    icon?: Component
-    count?: number
-    class?: string
-  }>(),
-  { count: 0 },
-)
+const props = defineProps<{
+  title: string
+  icon?: Component
+  /** Omit for blocks that are not a list: the badge is hidden then. */
+  count?: number
+  class?: string
+}>()
 
 /** Local for now; the card is self-contained so persisting layout later stays a one-liner. */
 const open = ref(true)
@@ -36,7 +34,9 @@ const open = ref(true)
       <component :is="icon" v-if="icon" class="text-muted-foreground size-4 shrink-0" />
       <!-- The title gives up its width first, so the actions keep to a single row. -->
       <h2 class="min-w-0 truncate text-sm font-semibold tracking-tight">{{ title }}</h2>
-      <Badge variant="secondary" class="shrink-0 tabular-nums">{{ count }}</Badge>
+      <Badge v-if="count !== undefined" variant="secondary" class="shrink-0 tabular-nums">
+        {{ count }}
+      </Badge>
 
       <div class="ml-auto flex flex-1 items-center justify-end gap-1.5">
         <slot name="actions" />

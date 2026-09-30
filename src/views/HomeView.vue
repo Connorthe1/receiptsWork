@@ -2,6 +2,7 @@
 import AddressBlock from '@/components/blocks/addresses/AddressBlock.vue'
 import PaymentCardsBlock from '@/components/blocks/cards/PaymentCardsBlock.vue'
 import EmailBlock from '@/components/blocks/emails/EmailBlock.vue'
+import GenerationBlock from '@/components/blocks/generation/GenerationBlock.vue'
 import ImportantInfoBlock from '@/components/blocks/important/ImportantInfoBlock.vue'
 import LinksBlock from '@/components/blocks/links/LinksBlock.vue'
 </script>
@@ -14,6 +15,7 @@ import LinksBlock from '@/components/blocks/links/LinksBlock.vue'
     </div>
 
     <div class="flex min-w-0 flex-col gap-5 xl:col-span-2">
+      <GenerationBlock />
       <ImportantInfoBlock />
       <LinksBlock />
       <PaymentCardsBlock />
