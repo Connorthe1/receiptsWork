@@ -12,6 +12,8 @@ const props = defineProps<{
   icon?: Component
   /** Omit for blocks that are not a list: the badge is hidden then. */
   count?: number
+  /** Shown next to the count for lists whose records can be switched off. */
+  activeCount?: number
   class?: string
 }>()
 
@@ -36,6 +38,14 @@ const open = ref(true)
       <h2 class="min-w-0 truncate text-sm font-semibold tracking-tight">{{ title }}</h2>
       <Badge v-if="count !== undefined" variant="secondary" class="shrink-0 tabular-nums">
         {{ count }}
+      </Badge>
+      <Badge
+        v-if="activeCount !== undefined"
+        variant="outline"
+        class="shrink-0 text-emerald-600 tabular-nums dark:text-emerald-400"
+        title="Активных"
+      >
+        {{ activeCount }} акт.
       </Badge>
 
       <div class="ml-auto flex flex-1 items-center justify-end gap-1.5">

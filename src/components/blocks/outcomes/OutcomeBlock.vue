@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ListChecksIcon, PlusIcon, UploadIcon } from '@lucide/vue'
+import { EyeIcon, ListChecksIcon, PlusIcon, UploadIcon } from '@lucide/vue'
 import { computed, ref } from 'vue'
 import { toast } from 'vue-sonner'
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue'
@@ -12,6 +12,7 @@ import { useDeletionTarget } from '@/composables/useDeletionTarget'
 import { useOutcomeStore } from '@/stores'
 import type { OutcomeItem, WorkspaceScope } from '@/types'
 import OutcomeImportDialog from './OutcomeImportDialog.vue'
+import OutcomePreviewDialog from './OutcomePreviewDialog.vue'
 import OutcomeRow from './OutcomeRow.vue'
 
 const props = withDefaults(defineProps<{ workspaceId?: WorkspaceScope; class?: string }>(), {
@@ -24,6 +25,7 @@ const newText = ref('')
 const newTag = ref('')
 const search = ref('')
 const importOpen = ref(false)
+const previewOpen = ref(false)
 
 const {
   target: pendingRemoval,
@@ -44,6 +46,8 @@ const outcomes = computed(() => {
     ...newestFirst.filter((item) => item.isDisabled),
   ]
 })
+
+const activeCount = computed(() => outcomes.value.filter((item) => !item.isDisabled).length)
 
 const visibleOutcomes = computed(() => {
   const query = search.value.trim().toLowerCase()
@@ -105,9 +109,26 @@ async function removeOutcome(item: OutcomeItem) {
 </script>
 
 <template>
-  <DashboardCard title="Исход" :icon="ListChecksIcon" :count="outcomes.length" :class="props.class">
+  <DashboardCard
+    title="Исход"
+    :icon="ListChecksIcon"
+    :count="outcomes.length"
+    :active-count="activeCount"
+    :class="props.class"
+  >
     <template #actions>
       <SearchInput v-model="search" class="max-w-40 min-w-24 flex-1" />
+      <Button
+        type="button"
+        variant="outline"
+        size="icon-sm"
+        aria-label="Превью записей построчно"
+        title="Превью"
+        :disabled="visibleOutcomes.length === 0"
+        @click="previewOpen = true"
+      >
+        <EyeIcon class="size-4" />
+      </Button>
       <Button
         type="button"
         variant="outline"
@@ -165,6 +186,12 @@ async function removeOutcome(item: OutcomeItem) {
     v-model:open="importOpen"
     :existing="outcomes.map((item) => item.text)"
     @import="addMany"
+  />
+
+  <!-- Follows the search, so a tag typed there narrows the preview too. -->
+  <OutcomePreviewDialog
+    v-model:open="previewOpen"
+    :texts="visibleOutcomes.map((item) => item.text)"
   />
 
   <ConfirmDialog
