@@ -59,6 +59,11 @@ const visibleOutcomes = computed(() => {
   )
 })
 
+/** Switched-off records are already used up, so the preview leaves them out. */
+const previewTexts = computed(() =>
+  visibleOutcomes.value.filter((item) => !item.isDisabled).map((item) => item.text),
+)
+
 async function add() {
   const text = newText.value.trim()
   if (!text) return
@@ -122,9 +127,9 @@ async function removeOutcome(item: OutcomeItem) {
         type="button"
         variant="outline"
         size="icon-sm"
-        aria-label="Превью записей построчно"
+        aria-label="Превью активных записей построчно"
         title="Превью"
-        :disabled="visibleOutcomes.length === 0"
+        :disabled="previewTexts.length === 0"
         @click="previewOpen = true"
       >
         <EyeIcon class="size-4" />
@@ -189,10 +194,7 @@ async function removeOutcome(item: OutcomeItem) {
   />
 
   <!-- Follows the search, so a tag typed there narrows the preview too. -->
-  <OutcomePreviewDialog
-    v-model:open="previewOpen"
-    :texts="visibleOutcomes.map((item) => item.text)"
-  />
+  <OutcomePreviewDialog v-model:open="previewOpen" :texts="previewTexts" />
 
   <ConfirmDialog
     v-model:open="removalOpen"

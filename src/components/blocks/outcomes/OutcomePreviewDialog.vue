@@ -28,7 +28,7 @@ const content = computed(() => props.texts.join('\n'))
       <DialogHeader>
         <DialogTitle>Превью</DialogTitle>
         <DialogDescription>
-          Одна строка — одна запись, в порядке списка. Записей: {{ texts.length }}.
+          Только активные записи, по одной на строку, в порядке списка. Записей: {{ texts.length }}.
         </DialogDescription>
       </DialogHeader>
 
@@ -36,7 +36,7 @@ const content = computed(() => props.texts.join('\n'))
         :model-value="content"
         readonly
         spellcheck="false"
-        aria-label="Записи построчно"
+        aria-label="Активные записи построчно"
         class="max-h-[60vh] font-mono text-xs"
       />
 
