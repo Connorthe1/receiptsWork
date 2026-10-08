@@ -1,6 +1,7 @@
 import { useAddressStore } from './addresses'
 import { useCardStore } from './cards'
 import { useEmailStore } from './emails'
+import { useFinanceStore } from './finance'
 import { useImportantInfoStore } from './importantInfo'
 import { useLinkStore } from './links'
 import { useOutcomeStore } from './outcomes'
@@ -10,6 +11,7 @@ export {
   useAddressStore,
   useCardStore,
   useEmailStore,
+  useFinanceStore,
   useImportantInfoStore,
   useLinkStore,
   useOutcomeStore,
@@ -25,10 +27,11 @@ export function useDashboardData() {
   const cards = useCardStore()
   const links = useLinkStore()
   const outcomes = useOutcomeStore()
+  const finance = useFinanceStore()
 
-  /** Lists that belong to a single scope; the email and important-info lists are app-wide. */
+  /** Lists that belong to a single scope; the email, important-info and finance lists are app-wide. */
   const scoped = [addresses, cards, links, outcomes]
-  const global = [workspaces, emails, importantInfo]
+  const global = [workspaces, emails, importantInfo, finance]
 
   async function loadAll(): Promise<void> {
     await Promise.all([...global, ...scoped].map((store) => store.load()))
@@ -56,6 +59,7 @@ export function useDashboardData() {
     cards,
     links,
     outcomes,
+    finance,
     loadAll,
     reloadAll,
     deleteWorkspace,

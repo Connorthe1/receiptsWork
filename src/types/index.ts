@@ -84,6 +84,35 @@ export interface OutcomeItem extends BaseEntity {
   isDisabled?: boolean
 }
 
+export type FinanceKind = 'deposit' | 'withdrawal'
+
+export type Currency = 'RUB' | 'USD'
+
+/** A kind of spending picked from a fixed list, e.g. «Закупка» or «Эксперименты». */
+export interface FinanceTag extends BaseEntity {
+  name: string
+  /** A key of the shared workspace palette. */
+  color: string
+}
+
+/** One money movement. Profit is never stored: it is withdrawals minus deposits over a period. */
+export interface FinanceOperation extends BaseEntity {
+  kind: FinanceKind
+  /** Always positive; the direction comes from `kind`. */
+  amount: number
+  currency: Currency
+  /** Calendar day as `YYYY-MM-DD`: it can be backdated and never drifts with the time zone. */
+  date: string
+  tagId: string | null
+  notes: string
+}
+
+/** App-wide values that must travel with the backup, such as the manual USD rate. */
+export interface AppSetting {
+  id: string
+  value: unknown
+}
+
 export type StatusFilter = 'all' | 'active' | 'inactive'
 
 /**
@@ -96,3 +125,5 @@ export type ImportantItemDraft = Omit<ImportantItem, keyof BaseEntity>
 export type AddressDraft = Omit<Address, keyof BaseEntity | 'workspaceId'>
 export type CardDraft = Omit<PaymentCard, keyof BaseEntity | 'workspaceId'>
 export type LinkDraft = Omit<LinkItem, keyof BaseEntity | 'workspaceId'>
+export type FinanceOperationDraft = Omit<FinanceOperation, keyof BaseEntity>
+export type FinanceTagDraft = Omit<FinanceTag, keyof BaseEntity>

@@ -1,7 +1,10 @@
 import Dexie, { type Table } from 'dexie'
 import type {
   Address,
+  AppSetting,
   EmailAccount,
+  FinanceOperation,
+  FinanceTag,
   ImportantItem,
   LinkItem,
   OutcomeItem,
@@ -19,6 +22,9 @@ export class DashboardDatabase extends Dexie {
   cards!: Table<PaymentCard, string>
   links!: Table<LinkItem, string>
   outcomes!: Table<OutcomeItem, string>
+  financeOperations!: Table<FinanceOperation, string>
+  financeTags!: Table<FinanceTag, string>
+  settings!: Table<AppSetting, string>
 
   constructor() {
     super('receipts-work')
@@ -68,6 +74,12 @@ export class DashboardDatabase extends Dexie {
             row.isDisabled ??= false
           })
       })
+
+    this.version(5).stores({
+      financeOperations: 'id, date, tagId, createdAt',
+      financeTags: 'id, createdAt',
+      settings: 'id',
+    })
   }
 }
 
@@ -82,6 +94,9 @@ export const dbTables = [
   'cards',
   'links',
   'outcomes',
+  'financeOperations',
+  'financeTags',
+  'settings',
 ] as const
 
 export type DbTableName = (typeof dbTables)[number]

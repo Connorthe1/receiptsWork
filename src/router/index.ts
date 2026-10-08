@@ -22,6 +22,12 @@ const router = createRouter({
       component: () => import('@/views/WorkspaceView.vue'),
     },
     {
+      path: '/finance',
+      name: 'finance',
+      component: () => import('@/views/FinanceView.vue'),
+      meta: { title: 'Финансы' },
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: () => import('@/views/SettingsView.vue'),

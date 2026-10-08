@@ -8,7 +8,10 @@ export const addressRepository = createRepository(db.addresses)
 export const cardRepository = createRepository(db.cards)
 export const linkRepository = createRepository(db.links)
 export const outcomeRepository = createRepository(db.outcomes)
+export const financeOperationRepository = createRepository(db.financeOperations)
+export const financeTagRepository = createRepository(db.financeTags)
 
 export * from './repository'
+export * from './settings'
 export * from './workspaceEmailStatus'
 export * from './backup'

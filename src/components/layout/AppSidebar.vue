@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HomeIcon, PlusIcon, ReceiptTextIcon, SettingsIcon } from '@lucide/vue'
+import { HomeIcon, PlusIcon, ReceiptTextIcon, SettingsIcon, WalletIcon } from '@lucide/vue'
 import { ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { toast } from 'vue-sonner'
@@ -67,6 +67,14 @@ async function handleCreate(draft: WorkspaceDraft) {
                 <RouterLink to="/">
                   <HomeIcon />
                   <span>Главная</span>
+                </RouterLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton as-child tooltip="Финансы" :is-active="route.name === 'finance'">
+                <RouterLink to="/finance">
+                  <WalletIcon />
+                  <span>Финансы</span>
                 </RouterLink>
               </SidebarMenuButton>
             </SidebarMenuItem>

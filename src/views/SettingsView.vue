@@ -119,7 +119,8 @@ async function confirmClear() {
       <CardHeader>
         <CardTitle class="text-destructive text-base">Опасная зона</CardTitle>
         <CardDescription>
-          Полная очистка удалит почты, разделы, адреса, карты и ссылки без возможности отмены.
+          Полная очистка удалит почты, разделы, адреса, карты, ссылки и финансы без возможности
+          отмены.
         </CardDescription>
       </CardHeader>
       <CardContent>
