@@ -15,7 +15,7 @@ import FinanceOperationFormDialog from './FinanceOperationFormDialog.vue'
 import FinanceOperationRow from './FinanceOperationRow.vue'
 
 const props = defineProps<{
-  /** Already narrowed to the selected period and tag. */
+  /** Already narrowed to the selected period, and deposits to the selected tag. */
   operations: FinanceOperation[]
   class?: string
 }>()

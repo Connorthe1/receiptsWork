@@ -151,7 +151,7 @@ async function removeTag(tag: FinanceTag) {
           type="button"
           class="min-w-0 flex-1 text-left"
           :aria-pressed="selected === card.tag.id"
-          :title="selected === card.tag.id ? 'Снять фильтр' : 'Показать только этот тег'"
+          :title="selected === card.tag.id ? 'Снять фильтр' : 'Показать траты только по этому тегу'"
           @click="toggle(card.tag.id)"
         >
           <span class="flex min-w-0 items-center gap-2">

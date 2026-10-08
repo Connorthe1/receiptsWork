@@ -42,10 +42,14 @@ const periodOperations = computed(() =>
   store.operations.filter((operation) => inRange(operation.date, range.value)),
 )
 
+/** Tags describe spending, so the tag filter narrows deposits and leaves every withdrawal in. */
 const filteredOperations = computed(() =>
   tagFilter.value === ALL_TAGS
     ? periodOperations.value
-    : periodOperations.value.filter((operation) => store.tagKey(operation) === tagFilter.value),
+    : periodOperations.value.filter(
+        (operation) =>
+          operation.kind === 'withdrawal' || store.tagKey(operation) === tagFilter.value,
+      ),
 )
 
 const summary = computed(() => summarize(filteredOperations.value, store.toDisplay))
@@ -78,16 +82,16 @@ function resetFilters() {
       />
 
       <Select v-if="store.tags.length" v-model="tagFilter">
-        <SelectTrigger size="sm" class="w-44" aria-label="Фильтр по тегу">
+        <SelectTrigger size="sm" class="w-44" aria-label="Фильтр трат по тегу">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem :value="ALL_TAGS">Все теги</SelectItem>
+          <SelectItem :value="ALL_TAGS">Все траты</SelectItem>
           <SelectItem v-for="tag in store.tags" :key="tag.id" :value="tag.id">
             <span :class="cn('size-2 shrink-0 rounded-full', workspaceColor(tag.color))" />
             {{ tag.name }}
           </SelectItem>
-          <SelectItem :value="UNTAGGED">Без тега</SelectItem>
+          <SelectItem :value="UNTAGGED">Траты без тега</SelectItem>
         </SelectContent>
       </Select>
 

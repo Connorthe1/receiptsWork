@@ -10,10 +10,8 @@ const props = withDefaults(
     icon?: Component
     /** Colours the value: profit green, loss red. */
     tone?: 'neutral' | 'positive' | 'negative'
-    /** The headline figures are large; the secondary statistics stay compact. */
-    size?: 'lg' | 'sm'
   }>(),
-  { tone: 'neutral', size: 'lg' },
+  { tone: 'neutral' },
 )
 
 const toneClasses = {
@@ -25,12 +23,7 @@ const toneClasses = {
 
 <template>
   <div
-    :class="
-      cn(
-        'bg-card text-card-foreground ring-foreground/10 flex min-w-0 flex-col rounded-xl shadow-xs ring-1',
-        props.size === 'lg' ? 'gap-2 px-5 py-4' : 'gap-1 px-4 py-3',
-      )
-    "
+    class="bg-card text-card-foreground ring-foreground/10 flex min-w-0 flex-col gap-2 rounded-xl px-5 py-4 shadow-xs ring-1"
   >
     <div class="text-muted-foreground flex items-center gap-2 text-xs font-medium">
       <component :is="icon" v-if="icon" class="size-4 shrink-0" />
@@ -38,11 +31,7 @@ const toneClasses = {
     </div>
     <p
       :class="
-        cn(
-          'truncate font-semibold tracking-tight tabular-nums',
-          props.size === 'lg' ? 'text-2xl' : 'text-lg',
-          toneClasses[props.tone],
-        )
+        cn('truncate text-2xl font-semibold tracking-tight tabular-nums', toneClasses[props.tone])
       "
     >
       {{ value }}

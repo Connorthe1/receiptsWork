@@ -114,10 +114,6 @@ export interface FinanceSummary {
   roi: number | null
   depositCount: number
   withdrawalCount: number
-  averageDeposit: number
-  averageWithdrawal: number
-  /** Already in the display currency. */
-  largestWithdrawal: { amount: number; date: string } | null
 }
 
 /** `toDisplay` turns an operation into the display currency, so every sum adds like with like. */
@@ -129,7 +125,6 @@ export function summarize(
   let withdrawn = 0
   let depositCount = 0
   let withdrawalCount = 0
-  let largestWithdrawal: FinanceSummary['largestWithdrawal'] = null
 
   for (const operation of operations) {
     const amount = toDisplay(operation)
@@ -140,10 +135,6 @@ export function summarize(
     } else {
       withdrawn += amount
       withdrawalCount++
-
-      if (!largestWithdrawal || amount > largestWithdrawal.amount) {
-        largestWithdrawal = { amount, date: operation.date }
-      }
     }
   }
 
@@ -156,8 +147,5 @@ export function summarize(
     roi: invested > 0 ? profit / invested : null,
     depositCount,
     withdrawalCount,
-    averageDeposit: depositCount ? invested / depositCount : 0,
-    averageWithdrawal: withdrawalCount ? withdrawn / withdrawalCount : 0,
-    largestWithdrawal,
   }
 }

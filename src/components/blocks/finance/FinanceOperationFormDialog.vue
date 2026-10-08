@@ -157,10 +157,7 @@ function handleSubmit() {
         <Input :id="id" v-model="form.date" type="date" />
       </FormField>
 
-      <FormField
-        label="Тег"
-        :hint="store.tags.length ? undefined : 'Теги создаются в блоке «Траты по тегам»'"
-      >
+      <FormField label="Тег">
         <Select v-model="form.tagId">
           <SelectTrigger class="w-full">
             <SelectValue />
